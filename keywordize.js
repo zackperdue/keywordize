@@ -17,7 +17,13 @@
   {
 
     var options = {
-      dictionary: []
+      dictionary: [],
+      expression: function(entry){
+        return new RegExp("("+entry.keyword+")", ["ig"]);
+      },
+      template: function(entry){
+        return '<a href="#" class="tooltip" title="'+entry.definition+'">$1</a>';
+      }
     }
 
     $.extend(options, config, true);
@@ -31,21 +37,20 @@
 
       $(options.dictionary).each(function(){
 
-        var
-          keyword         = this.keyword,
-          definition      = this.definition
-        ;
+        var entry = this;
 
         text = text.replace(
-          new RegExp("("+this.keyword+")", ["ig"]),
-          '<a href="#" class="tooltip" title="'+definition+'">$1</a>'
+          options.expression(entry),
+          options.template(entry)
         );
 
       });
 
       scope.html(text);
 
-      callback.call();
+      if (typeof callback === 'function')
+        callback.call();
+
     });
   };
 
